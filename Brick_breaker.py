@@ -13,3 +13,10 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False 
+
+pygame.time.delay(40)
+
+keys = pygame.key.get_pressed()
+
+if keys[pygame.K_LEFT]:
+
