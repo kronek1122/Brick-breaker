@@ -4,8 +4,6 @@ class Paddle(pygame.sprite.Sprite):
     def __init__(self, width, height, color):
         super().__init__()
         self.color = color
-        self.speed = 10
-
 
         self.image = pygame.Surface((width, height))
         self.image.fill((0,0,0))
@@ -14,9 +12,25 @@ class Paddle(pygame.sprite.Sprite):
         pygame.draw.rect(self.image, self.color, (0, 0, width, height))
         self.rect = self.image.get_rect()
 
-    '''def player_input(self):
+    def move(self,speed):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and self.x >= 10:
-            self.x -= self.speed 
-        if keys[pygame.K_RIGHT] and self.x <=790:
-            self.x += self.speed'''
+        if keys[pygame.K_LEFT] and self.rect.x > 0:
+            print('left')
+            self.rect.x -= speed
+        if keys[pygame.K_RIGHT] and self.rect.x < 700:
+            print('right')
+            self.rect.x += speed
+    
+    def moveLeft(self, speed):
+        self.rect.x -= speed
+        if self.rect.x < 0:
+            self.rect.x = 0
+
+    def moveRight(self,speed):
+        self.rect.x += speed
+        if self.rect.x > 700:
+            self.rect.x = 700
+
+    def update(self):
+        self.move(6)
+
