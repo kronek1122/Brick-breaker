@@ -8,8 +8,8 @@ class Paddle(pygame.sprite.Sprite):
         self.width = width
 
         self.image = pygame.Surface((self.width, self.height))
-        self.image.fill((0,0,0))
-        self.image.set_colorkey((0,0,0))
+        self.image.fill('black')
+        self.image.set_colorkey('black')
 
         pygame.draw.rect(self.image, self.color, (0, 0, self.width, self.height))
         self.rect = self.image.get_rect()
@@ -22,5 +22,5 @@ class Paddle(pygame.sprite.Sprite):
             self.rect.x += speed
 
     def update(self):
-        self.move(6)
+        self.move(7)
 
