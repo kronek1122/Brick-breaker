@@ -1,19 +1,27 @@
 import pygame
+import random
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, x, y, radius, color):
+    def __init__(self, radius, color):
         super().__init__()
-        self.x = x
-        self.y = y
-        self.radius = radius
+
         self.color = color
-        self.speed_x = 7
-        self.speed_y = 7
+        self.radius = radius
 
-    
-        #pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius )
+        self.image = pygame.Surface((2*self.radius, 2*self.radius))
+        self.image.fill('black')
+        self.image.set_colorkey('black')
+
+        self.rect = self.image.get_rect()
+        pygame.draw.circle(self.image, self.color, (self.radius, self.radius), self.radius)
+
+        self.velocity = [random.randint(4,7), random.choice([-6,-5,-4,4,5,6])]
 
 
-    def move(self):
-        self.x += self.speed_x
-        self.y += self.speed_y
+    def collision(self):
+        self.velocity[0] = -self.velocity[0]
+        self.velocity[1] = random.choice([-6,-5,-4,4,5,6])
+
+    def update(self):
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
