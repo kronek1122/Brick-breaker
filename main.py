@@ -40,16 +40,35 @@ ball =Ball(10, 10, WHITE)
 ball.rect.x = 345
 ball.rect.y = 195
 
+#Brick
+all_bricks = pygame.sprite.Group()
+for i in range(7):
+    brick = Brick(80,30, RED)
+    brick.rect.x = 60 + i* 100
+    brick.rect.y = 60
+    object_group.add(brick)
+    all_bricks.add(brick)
+for i in range(7):
+    brick = Brick(80,30, ORANGE)
+    brick.rect.x = 60 + i* 100
+    brick.rect.y = 100
+    object_group.add(brick)
+    all_bricks.add(brick)
+for i in range(7):
+    brick = Brick(80,30, YELLOW)
+    brick.rect.x = 60 + i* 100
+    brick.rect.y = 140
+    object_group.add(brick)
+    all_bricks.add(brick)
+
 #Add to group
 object_group.add(paddle)
 object_group.add(ball)
 
 while run:
-    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False 
-
     
     object_group.update()
 
@@ -59,6 +78,15 @@ while run:
         ball.velocity[0] = -ball.velocity[0]
     if ball.rect.y>590:
         ball.velocity[1] = -ball.velocity[1]
+        lives -= 1
+        if lives == 0:
+            text_game_over = font.render('GAME OVER', 1 ,WHITE)
+            screen.blit(text_game_over,(250,300))
+            pygame.display.flip()
+            pygame.time.wait(3000)
+
+            run = False
+
     if ball.rect.y<40:
         ball.velocity[1] = -ball.velocity[1]
     
@@ -66,7 +94,20 @@ while run:
     if pygame.sprite.collide_mask(ball, paddle):
       ball.rect.x -= ball.velocity[0]
       ball.rect.y -= ball.velocity[1]
-      ball.hit_paddle()
+      ball.collision()
+
+    #Ball hits brick
+    collision = pygame.sprite.spritecollide(ball,all_bricks,False)
+    for brick in collision:
+      ball.collision()
+      score += 1
+      brick.kill()
+      if len(all_bricks)==0:
+            text = font.render("LEVEL COMPLETE", 1, WHITE)
+            screen.blit(text, (200,300))
+            pygame.display.flip()
+            pygame.time.wait(3000)
+            run=False
 
     screen.fill((DARKBLUE)) #
     pygame.draw.line(screen,WHITE, [0,38],[800,38],2) # rysowanie lini

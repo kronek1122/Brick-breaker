@@ -19,7 +19,7 @@ class Ball(pygame.sprite.Sprite):
     
         #pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius )
 
-    def hit_paddle(self):
+    def collision(self):
         self.velocity[0] = -self.velocity[0]
         self.velocity[1] = randint(-8,8)
 
