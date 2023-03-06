@@ -3,35 +3,37 @@ from gameback.ball import Ball
 from gameback.brick import Brick
 
 from sys import exit
+
 import pygame
+
 
 pygame.init()
 
 width, height = 800, 600
 screen = pygame.display.set_mode((width,height))
 pygame.display.set_caption('Brick breaker')
-game_active = True 
+game_active = False 
 
 #Clock
 FPS = 60
 clock = pygame.time.Clock()
 
-#Font
-font = pygame.font.Font(None,34)
+#Fonts
+font_game = pygame.font.Font(None,34)
+font_main = pygame.font.SysFont('Verdana',50)
 
-#Score and Lives
+#Score, lives, levels
 score = 0
 lives = 3
-
-
+level = 1
 
 #Paddle 
-paddle = Paddle(100, 10,'gray')
+paddle = Paddle(100, 10,(158,103,132))
 paddle.rect.x = 350
 paddle.rect.y = 560
 
 #Ball
-ball =Ball(6, 'white')
+ball =Ball(6, (255,255,255))
 ball.rect.x = 345
 ball.rect.y = 195
 
@@ -43,36 +45,24 @@ object_group.add(ball)
 #Bricks
 all_bricks = pygame.sprite.Group()
 
-def bricks_making():
-    pass
+def bricks_making(row):
+    for i in range(row):
+        for j in range(9):
+            brick = Brick(78,30, (234,126,85))
+            brick.rect.x = 20 + j * 80
+            brick.rect.y = 60 + 62 * i
+            object_group.add(brick)
+            all_bricks.add(brick)
+        for n in range(9):
+            brick = Brick(78,30, (237,183,56))
+            brick.rect.x = 56 + n * 80
+            brick.rect.y = 91 + 62 * i
+            object_group.add(brick)
+            all_bricks.add(brick)
 
-for i in range(7):
-    brick = Brick(80,30, 'red')
-    brick.rect.x = 60 + i* 100
-    brick.rect.y = 60
-    object_group.add(brick)
-    all_bricks.add(brick)
-for i in range(7):
-    brick = Brick(80,30, 'orange')
-    brick.rect.x = 60 + i* 100
-    brick.rect.y = 100
-    object_group.add(brick)
-    all_bricks.add(brick)
-for i in range(7):
-    brick = Brick(80,30, 'yellow')
-    brick.rect.x = 60 + i* 100
-    brick.rect.y = 140
-    object_group.add(brick)
-    all_bricks.add(brick)
-
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit() 
-                    
-    object_group.update()
-
+#Ball conditions
+def ball_conditions():
+    global lives
     if ball.rect.x>=790:
         ball.velocity[0] = -ball.velocity[0]
     if ball.rect.x<=0:
@@ -80,50 +70,90 @@ while True:
     if ball.rect.y>590:
         ball.velocity[1] = -ball.velocity[1]
         lives -= 1
-        if lives == 0:
-            text_game_over = font.render('GAME OVER', 1 ,'white')
-            screen.blit(text_game_over,(height/2,width/2))
-            pygame.display.update()
-            pygame.time.wait(3000)
-            pygame.quit()
-            exit()
-
     if ball.rect.y<40:
         ball.velocity[1] = -ball.velocity[1]
     
-    #Ball-Paddle Collision
-    if pygame.sprite.collide_mask(ball, paddle):
-      ball.rect.x -= ball.velocity[0]
-      ball.rect.y -= ball.velocity[1]
-      ball.collision()
+#Intro screen
+game_name = font_main.render('Brick Breaker', False, (255,255,255))
+game_name_rect = game_name.get_rect(center = (400,200))
 
-    #Ball hits brick
-    collision = pygame.sprite.spritecollide(ball,all_bricks,False)
-    for brick in collision:
-      ball.collision()
-      score += 1
-      brick.kill()
-      if len(all_bricks)==0:
-            text_level_complete = font.render("LEVEL COMPLETE", 1, 'white')
-            screen.blit(text_level_complete, (height/2,width/2))
-            pygame.display.update()
-            pygame.time.wait(3000)
+game_message = font_main.render('Press space to run', False, (255,255,255))
+game_message_rect = game_message.get_rect(center = (400,330))
+
+bricks_making(level)
+
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
             pygame.quit()
-            exit()
+            exit() 
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            score = 0
+            lives = 3
+            level = 1
+            bricks_making(level)
+            ball.rect.x = 345
+            ball.rect.y = 350
+            game_active = True
 
+    if game_active:           
+        object_group.update()
 
-    screen.fill(('blue'))
-    pygame.draw.line(screen,'white', [0,38],[800,38],2) # rysowanie lini
+        ball_conditions()
 
-    text_score = font.render("Score:" + str(score), 1, 'white')
-    screen.blit(text_score,(20,10))
+        if lives == 0:
+            game_active = False
 
-    text_lives = font.render("Lives:" + str(lives), 1, 'white')
-    screen.blit(text_lives,(650,10))
+        #Ball-Paddle Collision
+        if pygame.sprite.collide_mask(ball, paddle):
+            ball.rect.x -= ball.velocity[0]
+            ball.rect.y -= ball.velocity[1]
+            ball.collision_paddle()
+
+        #Ball hits brick
+        collision = pygame.sprite.spritecollide(ball,all_bricks,False)
+        for brick in collision:
+            ball.collision_brick()
+            score += 1
+            brick.kill()
+        if len(all_bricks)==0:
+            text_level_complete = font_game.render(f"LEVEL {level} COMPLETE", 1, 'white')
+            screen.blit(text_level_complete, (300,200)) # DO POPRAWY !!!!!!!!!!!!!!!
+            pygame.display.update()
+            pygame.time.wait(1000)
+            level +=1
+            bricks_making(level)
+            ball.rect.x = 345
+            ball.rect.y = 350
+            if level >= 4:
+                text = font_game.render("YOU COMPLETE ALL LEVELS", 1, 'white')
+                screen.blit(text, (300,330)) # DO POPRAWY !!!!!!!!!!!!!!!
+                pygame.display.update()
+                pygame.time.wait(1000)
+                pygame.quit()
+                exit()
+
+        screen.fill((141,158,239))
+        pygame.draw.line(screen,'white', [0,40],[800,40],2)
+        text_score = font_game.render("Score:" + str(score), 1, 'white')
+        screen.blit(text_score,(20,10))
+        text_level = font_game.render("Level:" + str(level), 1, 'white')
+        screen.blit(text_level,(340,10))
+        text_lives = font_game.render("Lives:" + str(lives), 1, 'white')
+        screen.blit(text_lives,(650,10))
+        
+        object_group.draw(screen)
     
-    object_group.draw(screen)
-    
+    else:
+        screen.fill((141,158,239))
+        score_message = font_main.render(f'Your score: {score}', False, (255,255,255)) # DO USPRAWNIENIA okno główne
+        score_message_rect = score_message.get_rect(center = (400,330))
+        screen.blit(game_name, game_name_rect)
+
+        if score == 0: screen.blit(game_message,game_message_rect)
+        else: screen.blit(score_message, score_message_rect)
+        
     pygame.display.update()
-
     clock.tick(FPS)
     
+# KOD DO SKRÓćenia
