@@ -20,7 +20,7 @@ class Ball(pygame.sprite.Sprite):
 
     def collision_brick(self):
         self.velocity[0] = -self.velocity[0]
-        self.velocity[1] = random.choice([4,5,6])
+        self.velocity[1] = random.choice([-6,-5,-4,4,5,6])
     
     def collision_paddle(self):
         self.velocity[0] = -self.velocity[0]
