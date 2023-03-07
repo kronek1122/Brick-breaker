@@ -98,7 +98,7 @@ def ball_brick_collison():
         bricks_making(level)
         ball.rect.x = 345
         ball.rect.y = 350
-        if level >= 3:
+        if level >= 4:
             text = font_game.render("YOU COMPLETE ALL LEVELS", 1, 'white')
             screen.blit(text, (240,200))
             pygame.display.update()
