@@ -15,13 +15,13 @@ class Ball(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         pygame.draw.circle(self.image, self.color, (self.radius, self.radius), self.radius)
 
-        self.velocity = [random.randint(4,7), 4]
+        self.velocity = [random.randint(4,7), 2]
 
 
     def collision_brick(self):
-        self.velocity[0] = -self.velocity[0]
-        self.velocity[1] = random.choice([-6,-5,-4,4,5,6])
-    
+        self.velocity[0] = self.velocity[0]
+        self.velocity[1] = -self.velocity[1]
+
     def collision_paddle(self):
         self.velocity[0] = -self.velocity[0]
         self.velocity[1] = random.choice([-6,-5,-4,4,5,6])

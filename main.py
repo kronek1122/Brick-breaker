@@ -137,6 +137,7 @@ while True:
             ball.collision_paddle()
 
         #Ball hits brick
+        
         ball_brick_collison()
         
         screen.fill((102,102,225))
